@@ -7,7 +7,8 @@ defmodule Again do
 
   @type result :: term()
   @type acc :: term()
-  @type delays :: Enumerable.t(non_neg_integer())
+  @type delay :: non_neg_integer()
+  @type delays :: Enumerable.t(delay())
 
   @spec retry((-> result()), (result() -> boolean()), delays()) :: result()
   def retry(function, should_retry_fn, delays) do

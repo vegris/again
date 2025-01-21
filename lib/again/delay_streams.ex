@@ -7,6 +7,7 @@
 # Changes made:
 #   - Renamed module to Again.DelayStreams
 #   - Adjusted documentation, added doctests and examples
+#   - Adjusted typespecs to link to Again types
 
 defmodule Again.DelayStreams do
   @moduledoc """
@@ -32,7 +33,7 @@ defmodule Again.DelayStreams do
       iex> 100 |> exponential_backoff(1.5) |> Enum.take(5)
       [100, 150, 225, 338, 507]
   """
-  @spec exponential_backoff(pos_integer(), factor()) :: Enumerable.t()
+  @spec exponential_backoff(Again.delay(), factor()) :: Again.delays()
   def exponential_backoff(initial_delay \\ 10, factor \\ 2) do
     Stream.unfold(initial_delay, fn last_delay ->
       {last_delay, round(last_delay * factor)}
@@ -53,7 +54,7 @@ defmodule Again.DelayStreams do
       10 |> linear_backoff(10) |> jitter() |> Enum.take(5)
       [8, 14, 28, 27, 15]
   """
-  @spec jitter(Enumerable.t()) :: Enumerable.t()
+  @spec jitter(Again.delays()) :: Again.delays()
   def jitter(delays) do
     Stream.map(delays, fn delay ->
       delay
@@ -75,7 +76,7 @@ defmodule Again.DelayStreams do
       iex> 100 |> linear_backoff(50) |> Enum.take(5)
       [100, 150, 200, 250, 300]
   """
-  @spec linear_backoff(pos_integer(), factor()) :: Enumerable.t()
+  @spec linear_backoff(Again.delay(), factor()) :: Again.delays()
   def linear_backoff(initial_delay, factor) do
     Stream.unfold(0, fn failures ->
       next_d = initial_delay + round(failures * factor)
@@ -94,7 +95,7 @@ defmodule Again.DelayStreams do
       iex> 250 |> constant_backoff() |> Enum.take(5)
       [250, 250, 250, 250, 250]
   """
-  @spec constant_backoff(pos_integer()) :: Enumerable.t()
+  @spec constant_backoff(Again.delay()) :: Again.delays()
   def constant_backoff(delay \\ 100) do
     Stream.repeatedly(fn -> delay end)
   end
@@ -110,7 +111,7 @@ defmodule Again.DelayStreams do
       100 |> linear_backoff(50) |> randomize(0.5) |> Enum.take(5)
       [130, 135, 106, 317, 191]
   """
-  @spec randomize(Enumerable.t(), float()) :: Enumerable.t()
+  @spec randomize(Again.delays(), float()) :: Again.delays()
   def randomize(delays, proportion \\ 0.1) do
     Stream.map(delays, fn d ->
       max_delta = round(d * proportion)
@@ -137,7 +138,7 @@ defmodule Again.DelayStreams do
       iex> 100 |> linear_backoff(100) |> cap(250) |> Enum.take(5)
       [100, 200, 250, 250, 250]
   """
-  @spec cap(Enumerable.t(), pos_integer()) :: Enumerable.t()
+  @spec cap(Again.delays(), Again.delay()) :: Again.delays()
   def cap(delays, max) do
     Stream.map(
       delays,
@@ -169,7 +170,7 @@ defmodule Again.DelayStreams do
       |> Enum.sum()
       500
   """
-  @spec expiry(Enumerable.t(), pos_integer(), pos_integer()) :: Enumerable.t()
+  @spec expiry(Again.delays(), pos_integer(), Again.delay()) :: Again.delays()
   def expiry(delays, time_budget, min_delay \\ 100) do
     Stream.resource(
       fn -> {delays, :os.system_time(:milli_seconds) + time_budget} end,
