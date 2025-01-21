@@ -28,7 +28,8 @@ defmodule Again.MixProject do
     [
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:mox, "~> 1.2", only: :test}
+      {:mox, "~> 1.2", only: :test},
+      {:ex_doc, "~> 0.36.1", only: :docs, runtime: false}
     ]
   end
 
