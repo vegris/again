@@ -6,27 +6,31 @@
 #
 # Changes made:
 #   - Renamed module to Again.DelayStreams
+#   - Adjusted documentation, added doctests and examples
 
 defmodule Again.DelayStreams do
   @moduledoc """
+  Functions to produce or transform streams of delay values.
 
-  This module provide a set of helper functions that produce delay streams for
-  use with `retry`.
-
+  The design and implementation of these delay streams are derived
+  from [ElixirRetry](https://github.com/safwank/ElixirRetry) project
+  made by Safwan Kamarrudin and other [contributors](https://github.com/safwank/ElixirRetry/graphs/contributors).
   """
 
   @type factor() :: pos_integer() | float()
 
   @doc """
-
   Returns a stream of delays that increase exponentially.
 
-  Example
+  Resulting values are rounded with `Kernel.round/1` in case floating point factor is used.
 
-      retry with: exponential_backoff do
-        # ...
-      end
+  ## Examples
 
+      iex> exponential_backoff() |> Enum.take(5)
+      [10, 20, 40, 80, 160]
+
+      iex> 100 |> exponential_backoff(1.5) |> Enum.take(5)
+      [100, 150, 225, 338, 507]
   """
   @spec exponential_backoff(pos_integer(), factor()) :: Enumerable.t()
   def exponential_backoff(initial_delay \\ 10, factor \\ 2) do
@@ -36,16 +40,18 @@ defmodule Again.DelayStreams do
   end
 
   @doc """
-
   Returns a stream in which each element of `delays` is randomly adjusted to a number
   between 1 and the original delay.
 
-  Example
+  ## Examples
 
-      retry with: exponential_backoff() |> jitter() do
-        # ...
-      end
+      # Without jitter
+      iex> 10 |> linear_backoff(10) |> Enum.take(5)
+      [10, 20, 30, 40, 50]
 
+      # With jitter
+      10 |> linear_backoff(10) |> jitter() |> Enum.take(5)
+      [8, 14, 28, 27, 15]
   """
   @spec jitter(Enumerable.t()) :: Enumerable.t()
   def jitter(delays) do
@@ -57,15 +63,17 @@ defmodule Again.DelayStreams do
   end
 
   @doc """
-
   Returns a stream of delays that increase linearly.
 
-  Example
+  Resulting values are rounded with `Kernel.round/1` in case floating point factor is used.
 
-      retry with: linear_backoff(50, 2) do
-        # ...
-      end
+  ## Examples
 
+      iex> 10 |> linear_backoff(10) |> Enum.take(5)
+      [10, 20, 30, 40, 50]
+
+      iex> 100 |> linear_backoff(50) |> Enum.take(5)
+      [100, 150, 200, 250, 300]
   """
   @spec linear_backoff(pos_integer(), factor()) :: Enumerable.t()
   def linear_backoff(initial_delay, factor) do
@@ -76,15 +84,15 @@ defmodule Again.DelayStreams do
   end
 
   @doc """
-
   Returns a constant stream of delays.
 
-  Example
+  ## Examples
 
-      retry with: constant_backoff(50) do
-        # ...
-      end
+      iex> Enum.take(constant_backoff(), 5)
+      [100, 100, 100, 100, 100]
 
+      iex> 250 |> constant_backoff() |> Enum.take(5)
+      [250, 250, 250, 250, 250]
   """
   @spec constant_backoff(pos_integer()) :: Enumerable.t()
   def constant_backoff(delay \\ 100) do
@@ -92,19 +100,15 @@ defmodule Again.DelayStreams do
   end
 
   @doc """
+  Returns a stream in which each element of `delays` is randomly adjusted no more than `proportion` of the delay.
 
-  Returns a stream in which each element of `delays` is randomly adjusted no
-  more than `proportion` of the delay.
+  ## Examples
 
-  Example
+      100 |> linear_backoff(50) |> randomize() |> Enum.take(5)
+      [102, 141, 203, 226, 272]
 
-      retry with: exponential_backoff() |> randomize do
-        # ...
-      end
-
-  Produces an exponentially increasing delay stream where each delay is randomly
-  adjusted to be within 10 percent of the original value
-
+      100 |> linear_backoff(50) |> randomize(0.5) |> Enum.take(5)
+      [130, 135, 106, 317, 191]
   """
   @spec randomize(Enumerable.t(), float()) :: Enumerable.t()
   def randomize(delays, proportion \\ 0.1) do
@@ -120,19 +124,18 @@ defmodule Again.DelayStreams do
   end
 
   @doc """
+  Returns a stream that is the same as `delays` except that the delays never exceed `max`.
 
-  Returns a stream that is the same as `delays` except that the delays never
-  exceed `max`. This allow capping the delay between attempts to some max value.
+  This allow capping the delay between attempts to some max value.
 
-  Example
+  ## Examples
 
-      retry with: exponential_backoff() |> cap(10_000) do
-        # ...
-      end
-
-  Produces an exponentially increasing delay stream until the delay reaches 10
-  seconds at which point it stops increasing
-
+      # Uncapped 
+      iex> 100 |> linear_backoff(100) |> Enum.take(5)
+      [100, 200, 300, 400, 500]
+      # Capped 
+      iex> 100 |> linear_backoff(100) |> cap(250) |> Enum.take(5)
+      [100, 200, 250, 250, 250]
   """
   @spec cap(Enumerable.t(), pos_integer()) :: Enumerable.t()
   def cap(delays, max) do
@@ -146,10 +149,9 @@ defmodule Again.DelayStreams do
   end
 
   @doc """
+  Returns a delay stream that is the same as `delays` except it limits the total life span of the stream to `time_budget`.
 
-  Returns a delay stream that is the same as `delays` except it limits the total
-  life span of the stream to `time_budget`. This calculation takes the execution
-  time of the block being retried into account.
+  This calculation takes the execution time of the block being retried into account.
 
   The execution of the code within the block will not be interrupted, so
   the total time of execution may run over the `time_budget` depending on how
@@ -158,15 +160,14 @@ defmodule Again.DelayStreams do
   Optionally, you can specify a minimum delay so the smallest value doesn't go
   below the threshold.
 
-  Example
+  ## Examples
 
-      retry with: exponential_backoff() |> expiry(1_000) do
-        # ...
-      end
-
-  Produces a delay stream that ends after 1 second has elapsed since its
-  creation.
-
+      100
+      |> constant_backoff()
+      |> expiry(500)
+      |> Stream.each(&Process.sleep/1)
+      |> Enum.sum()
+      500
   """
   @spec expiry(Enumerable.t(), pos_integer(), pos_integer()) :: Enumerable.t()
   def expiry(delays, time_budget, min_delay \\ 100) do

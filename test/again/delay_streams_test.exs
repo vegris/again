@@ -10,6 +10,8 @@
 defmodule Again.DelayStreamsTest do
   use ExUnit.Case, async: true
 
+  doctest Again.DelayStreams, import: true
+
   import Again.DelayStreams
 
   describe "exponential_backoff/1" do
