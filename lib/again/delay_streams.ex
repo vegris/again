@@ -13,6 +13,47 @@ defmodule Again.DelayStreams do
   @moduledoc """
   Functions to produce or transform streams of delay values.
 
+  You can import the module for convenient access:
+
+      import Again.DelayStreams
+
+  Common delay patterns can be composed using stream transformations:
+
+      # Exponential growth with 50ms initial delay, randomized, capped at 1 second, stop after 5 attempts
+      50
+      |> exponential_backoff()
+      |> randomize(0.2)
+      |> cap(1_000)
+      |> Stream.take(5)
+
+      # Linear growth with 100ms initial delay, with jitter, stop after 30 seconds
+      100
+      |> linear_backoff(50)
+      |> jitter()
+      |> expiry(30_000)
+
+  > #### Infinite retries {: .warning}
+  >
+  > Most functions in this module produce infinite sequences.
+  >
+  > Always bound them with either `Stream.take/2` or `expiry/3` to prevent infinite retries:
+  >
+  >     # Limit by number of attempts
+  >     exponential_backoff() |> Stream.take(5)
+  >
+  >     # Limit by total time budget
+  >     constant_backoff(100) |> expiry(30_000)
+
+  ### Delay streams are not special!
+
+  Any `Enumerable` of non-negative integers can be used as `delays`:
+
+       # Fixed delays with a list
+       Again.retry(fn -> ... end, &should_retry?/1, [100, 200, 300])
+
+       # Increasing delays with a range
+       Again.retry(fn -> ... end, &should_retry?/1, 100..500//100)
+
   The design and implementation of these delay streams are derived
   from [ElixirRetry](https://github.com/safwank/ElixirRetry) project
   made by Safwan Kamarrudin and other [contributors](https://github.com/safwank/ElixirRetry/graphs/contributors).
