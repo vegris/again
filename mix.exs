@@ -1,16 +1,24 @@
 defmodule Again.MixProject do
   use Mix.Project
 
+  @version "0.1.0"
+  @repo_url "https://github.com/vegris/again"
+
   def project do
     [
       app: :again,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
       dialyzer: dialyzer(),
+
+      # Package info
+      name: "Again",
+      description: "Simple retries with composable backoff strategies",
+      package: package(),
       docs: docs()
     ]
   end
@@ -44,9 +52,19 @@ defmodule Again.MixProject do
     ]
   end
 
+  defp package do
+    [
+      maintainers: ["Vsevolod Grigorev"],
+      licenses: ["Apache-2.0"],
+      links: %{"GitHub" => @repo_url}
+    ]
+  end
+
   defp docs do
     [
       main: "Again",
+      source_url: @repo_url,
+      source_ref: "v#{@version}",
       extras: ["docs/Migrating from Retry.md", "docs/Problems with Retry.md"]
     ]
   end
