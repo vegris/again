@@ -1,5 +1,5 @@
 import Config
 
 if config_env() == :test do
-  config :again, :sleeper, Again.SendSleeper
+  config :once_more, :sleeper, OnceMore.SendSleeper
 end

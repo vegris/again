@@ -1,12 +1,12 @@
-defmodule Again do
+defmodule OnceMore do
   @moduledoc """
   Provides retry functionality with configurable backoff strategies.
 
-  Again allows you to easily retry operations that may fail temporarily, such as network 
+  OnceMore allows you to easily retry operations that may fail temporarily, such as network 
   requests or distributed system operations. It supports both simple retries and 
   stateful retries with an accumulator.
 
-  Again is heavily inspired by the [Retry](https://hexdocs.pm/retry) library.
+  OnceMore is heavily inspired by the [Retry](https://hexdocs.pm/retry) library.
   For details on the design decisions, see [Problems with Retry](Problems with Retry.md). 
   If you're migrating from Retry, check out the [Migrating from Retry](Migrating from Retry.md).
 
@@ -14,9 +14,9 @@ defmodule Again do
 
   The most common use case is retrying a function until it succeeds:
 
-      import Again.DelayStreams
+      import OnceMore.DelayStreams
 
-      Again.retry(
+      OnceMore.retry(
         fn -> make_network_call() end,
         &match?({:error, _}, &1),
         Stream.take(exponential_backoff(), 5)
@@ -24,7 +24,7 @@ defmodule Again do
 
   ## Features
 
-    * Composable backoff strategies via `Again.DelayStreams`
+    * Composable backoff strategies via `OnceMore.DelayStreams`
     * Flexible retry predicates - specify precisely what conditions to retry
     * Accumulator support - maintain state between retry attempts
 
@@ -32,7 +32,7 @@ defmodule Again do
 
   For operations that need to maintain state between attempts, use `retry_with_acc/4`:
 
-      Again.retry_with_acc(
+      OnceMore.retry_with_acc(
         fn attempts -> {network_call(), attempts + 1} end,
         fn result, _attempts -> match?({:error, _}, result) end,
         0,
@@ -40,7 +40,7 @@ defmodule Again do
       )
   """
 
-  @sleeper Application.compile_env(:again, :sleeper, Process)
+  @sleeper Application.compile_env(:once_more, :sleeper, Process)
 
   @typedoc """
   Return value from the function being retried.
@@ -82,14 +82,14 @@ defmodule Again do
   ## Examples
 
       # Retry with exponential backoff, limited to 5 attempts
-      Again.retry(
+      OnceMore.retry(
         fn -> network_call() end,
         &match?({:error, _}, &1),
         Stream.take(exponential_backoff(), 5)
       )
 
       # Retry only specific errors with 100ms delays, stopping after 1 second of attempts
-      Again.retry(
+      OnceMore.retry(
         fn -> network_call() end,
         &match?({:error, reason} when reason in @reasons, &1)
         100 |> constant_backoff() |> expiry(1_000)
@@ -131,7 +131,7 @@ defmodule Again do
   ## Examples
 
       # Retry with exponential backoff, tracking attempt count
-      Again.retry_with_acc(
+      OnceMore.retry_with_acc(
         fn count -> {network_call(), count + 1} end,
         fn result, _count -> match?({:error, _}, result) end,
         0,
@@ -139,7 +139,7 @@ defmodule Again do
       )
 
       # Retry with constant backoff, accumulating errors
-      Again.retry_with_acc(
+      OnceMore.retry_with_acc(
         fn errors -> 
           case network_call() do
             {:error, reason} = err -> {err, [reason | errors]}

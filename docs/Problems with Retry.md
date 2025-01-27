@@ -52,10 +52,10 @@ retry with: delays, atoms: [:retryable] do
   end
 ```
 
-With __Again__, programmers can precisely configure which errors should trigger retries:
+With __OnceMore__, programmers can precisely configure which errors should trigger retries:
 
 ```elixir
-Again.retry(
+OnceMore.retry(
   fn -> Redix.command(conn, command) end,
   &match?({:error, reason} when not is_struct(reason, Redix.Error), &1),
   delays
@@ -213,4 +213,4 @@ end
 
 While 50 additional lines of code is not a significant concern, it should be noted that this amount of code will be generated with each new `retry/2` call. This can have a negative impact on project compilation time. Furthermore, each expanded version includes all possible error handling variants: `:error` atoms, `{:error, reason}` tuples, and exceptions. However, in practice each call likely works with only one error type.
 
-Also, the `retry/2` macro does nothing special that can't be done by a function call (as demonstrated by __Again__), which means it is [an anti-pattern](`e:elixir:macro-anti-patterns.html#unnecessary-macros`).
+Also, the `retry/2` macro does nothing special that can't be done by a function call (as demonstrated by __OnceMore__), which means it is [an anti-pattern](`e:elixir:macro-anti-patterns.html#unnecessary-macros`).

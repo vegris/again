@@ -1,12 +1,12 @@
-defmodule Again.MixProject do
+defmodule OnceMore.MixProject do
   use Mix.Project
 
   @version "0.1.0"
-  @repo_url "https://github.com/vegris/again"
+  @repo_url "https://github.com/vegris/once_more"
 
   def project do
     [
-      app: :again,
+      app: :once_more,
       version: @version,
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
@@ -16,7 +16,7 @@ defmodule Again.MixProject do
       dialyzer: dialyzer(),
 
       # Package info
-      name: "Again",
+      name: "OnceMore",
       description: "Simple retries with composable backoff strategies",
       package: package(),
       docs: docs()
@@ -62,7 +62,7 @@ defmodule Again.MixProject do
 
   defp docs do
     [
-      main: "Again",
+      main: "OnceMore",
       source_url: @repo_url,
       source_ref: "v#{@version}",
       extras: ["docs/Migrating from Retry.md", "docs/Problems with Retry.md"]

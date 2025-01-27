@@ -1,4 +1,4 @@
-defmodule Again.SendSleeper do
+defmodule OnceMore.SendSleeper do
   @moduledoc false
   def sleep(timeout) do
     send(self(), {__MODULE__, timeout})
@@ -6,15 +6,15 @@ defmodule Again.SendSleeper do
   end
 end
 
-defmodule Again.Callable do
+defmodule OnceMore.Callable do
   @moduledoc false
-  @callback function() :: Again.result()
+  @callback function() :: OnceMore.result()
 end
 
-defmodule Again.CallableWithAcc do
+defmodule OnceMore.CallableWithAcc do
   @moduledoc false
-  @callback function(Again.acc()) :: {Again.result(), Again.acc()}
+  @callback function(OnceMore.acc()) :: {OnceMore.result(), OnceMore.acc()}
 end
 
-Mox.defmock(Again.CallableMock, for: Again.Callable)
-Mox.defmock(Again.CallableWithAccMock, for: Again.CallableWithAcc)
+Mox.defmock(OnceMore.CallableMock, for: OnceMore.Callable)
+Mox.defmock(OnceMore.CallableWithAccMock, for: OnceMore.CallableWithAcc)

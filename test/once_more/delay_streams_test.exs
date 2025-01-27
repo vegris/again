@@ -5,14 +5,14 @@
 # Licensed under the Apache License, Version 2.0
 #
 # Changes made:
-#   - Renamed module to Again.DelayStreamsTest
+#   - Renamed module to OnceMore.DelayStreamsTest
 
-defmodule Again.DelayStreamsTest do
+defmodule OnceMore.DelayStreamsTest do
   use ExUnit.Case, async: true
 
-  doctest Again.DelayStreams, import: true
+  doctest OnceMore.DelayStreams, import: true
 
-  import Again.DelayStreams
+  import OnceMore.DelayStreams
 
   describe "exponential_backoff/1" do
     test "returns exponentially increasing delays starting with default initial delay" do

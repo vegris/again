@@ -1,43 +1,43 @@
-# Again
+# OnceMore
 
 A flexible retry library for Elixir with composable backoff strategies.
 
-Again allows you to easily retry operations that may fail temporarily, such as network 
+OnceMore allows you to easily retry operations that may fail temporarily, such as network 
 requests or distributed system operations. It supports both simple retries and 
 stateful retries with an accumulator.
 
 ## Installation
 
-Add `again` to your list of dependencies in `mix.exs`:
+Add `once_more` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:again, "~> 1.0.0"}
+    {:once_more, "~> 1.0.0"}
   ]
 end
 ```
 
 ## Features
 
-* Composable backoff strategies via `Again.DelayStreams`
+* Composable backoff strategies via `OnceMore.DelayStreams`
 * Flexible retry predicates - specify precisely what conditions to retry
 * Accumulator support - maintain state between retry attempts
 
 ## Quick start
 
 ```elixir
-import Again.DelayStreams
+import OnceMore.DelayStreams
 
 # Basic retry with exponential backoff
-Again.retry(
+OnceMore.retry(
   fn -> make_network_call() end,
   &match?({:error, _}, &1),
   Stream.take(exponential_backoff(), 5)
 )
 
 # Retry with accumulator to track state
-Again.retry_with_acc(
+OnceMore.retry_with_acc(
   fn attempts -> {network_call(), attempts + 1} end,
   fn result, _attempts -> match?({:error, _}, result) end,
   0,
@@ -52,7 +52,7 @@ Again.retry_with_acc(
 |> Stream.take(5)         # Limit to 5 attempts
 ```
 
-Full documentation can be found at https://hexdocs.pm/again.
+Full documentation can be found at https://hexdocs.pm/once_more.
 
 
 ## License
