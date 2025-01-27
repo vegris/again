@@ -1,7 +1,7 @@
 defmodule OnceMore.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "1.0.0"
   @repo_url "https://github.com/vegris/once_more"
 
   def project do
