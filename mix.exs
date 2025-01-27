@@ -9,6 +9,7 @@ defmodule Again.MixProject do
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
+      test_coverage: [tool: ExCoveralls],
       dialyzer: dialyzer(),
       docs: docs()
     ]
@@ -30,6 +31,7 @@ defmodule Again.MixProject do
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:mox, "~> 1.2", only: :test},
+      {:excoveralls, "~> 0.18.3", only: :test},
       {:ex_doc, "~> 0.36.1", only: :docs, runtime: false}
     ]
   end
