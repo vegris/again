@@ -6,6 +6,10 @@ defmodule Again do
   requests or distributed system operations. It supports both simple retries and 
   stateful retries with an accumulator.
 
+  Again is heavily inspired by the [Retry](https://hexdocs.pm/retry) library.
+  For details on the design decisions, see [Problems with Retry](Problems with Retry.md). 
+  If you're migrating from Retry, check out the [Migrating from Retry](Migrating from Retry.md).
+
   ## Basic usage
 
   The most common use case is retrying a function until it succeeds:

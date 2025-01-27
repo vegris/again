@@ -9,7 +9,8 @@ defmodule Again.MixProject do
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
-      dialyzer: dialyzer()
+      dialyzer: dialyzer(),
+      docs: docs()
     ]
   end
 
@@ -38,6 +39,13 @@ defmodule Again.MixProject do
       plt_core_path: "priv/plts",
       plt_local_path: "priv/plts",
       flags: ~w[error_handling extra_return missing_return underspecs unmatched_returns]a
+    ]
+  end
+
+  defp docs do
+    [
+      main: "Again",
+      extras: ["docs/Migrating from Retry.md", "docs/Problems with Retry.md"]
     ]
   end
 end
