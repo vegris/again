@@ -1,5 +1,10 @@
 # OnceMore
 
+[![Hex.pm Version](https://img.shields.io/hexpm/v/once_more)](https://hex.pm/packages/once_more)
+[![Documentation](https://img.shields.io/badge/documentation-gray)](https://hexdocs.pm/once_more)
+[![CI](https://github.com/vegris/once_more/actions/workflows/ci.yml/badge.svg)](https://github.com/vegris/once_more/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/vegris/once_more/badge.svg?branch=main)](https://coveralls.io/github/vegris/once_more?branch=main)
+
 A flexible retry library for Elixir with composable backoff strategies.
 
 OnceMore allows you to easily retry operations that may fail temporarily, such as network 
